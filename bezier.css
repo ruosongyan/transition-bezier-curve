@@ -1,0 +1,18 @@
+#curve{
+    border:1px solid black;
+}
+
+.ct-vertical{
+    writing-mode: vertical-lr;
+    text-align: center;
+}
+.ct-horizon{
+    text-align: center;
+    width: 100%;
+    display: inline-block;
+    writing-mode: horizontal-tb;
+}
+.ct-content{
+    display: inline-block;
+    text-align: left;
+}
