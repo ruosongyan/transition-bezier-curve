@@ -31,16 +31,17 @@ class Bezier {
             this.y = y;
             this.radius = radius;
             this.isSelect = isSelect ? isSelect : false;
+            this.path=null;
         }
         draw() {
-            let path = this.getPath();
+            this.path = this.getPath();
             if (this.isSelect) {
                 ctx.lineWidth = 5;
             } else {
                 ctx.lineWidth = 1;
             }
             ctx.beginPath();
-            ctx.stroke(path);
+            ctx.stroke(this.path);
         }
         getPath() {
             let circle = new Path2D();
@@ -81,19 +82,16 @@ class Bezier {
     drawCanvas();
 
     //绑定事件
-    let p2Path=p2.getPath(),
-        p3Path=p3.getPath();
     let drag=false,
         dragCircle=null;
     canvas.addEventListener('mousedown', function (e) {
         let pos = getPosition(e.clientX, e.clientY);
-        console.log(ctx.isPointInPath(p2Path, pos.x, pos.y));
-        if (ctx.isPointInPath(p2Path, pos.x, pos.y)) {
+        if (ctx.isPointInPath(p2.path, pos.x, pos.y)) {
             drag = true;
             dragCircle = p2;
             p2.isSelect = true;
             drawCanvas();
-        }else if (ctx.isPointInPath(p3Path, pos.x, pos.y)){
+        }else if (ctx.isPointInPath(p3.path, pos.x, pos.y)){
             drag = true;
             dragCircle = p3;
             p3.isSelect = true;
