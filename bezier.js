@@ -212,25 +212,21 @@ class Bezier {
     let y1Dom = document.querySelector('#y1');
     let x2Dom = document.querySelector('#x2');
     let y2Dom = document.querySelector('#y2');
-    let wx1 = new Watcher((value) => {
+    x1Dom.value = p2.coordX;
+    y1Dom.value = p2.coordY;
+    x2Dom.value = p3.coordX;
+    y2Dom.value = p3.coordY;
+    new Watcher(p2,"coordX",(value) => {
         x1Dom.value = value;
     })
-    let wy1 = new Watcher((value) => {
+    new Watcher(p2,"coordY",(value) => {
         y1Dom.value = value;
     })
-    let wx2 = new Watcher((value) => {
+    new Watcher(p3,"coordX",(value) => {
         x2Dom.value = value;
     })
-    let wy2 = new Watcher((value) => {
+    new Watcher(p3,"coordY",(value) => {
         y2Dom.value = value;
     })
-    obsP2.on('coordX', wx1);
-    obsP2.on('coordY', wy1);
-    obsP3.on('coordX', wx2);
-    obsP3.on('coordY', wy2);
-    obsP2.trigger('coordX', p2.coordX);
-    obsP2.trigger('coordY', p2.coordY);
-    obsP3.trigger('coordX', p3.coordX);
-    obsP3.trigger('coordY', p3.coordY);
 
 }()
