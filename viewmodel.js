@@ -4,13 +4,13 @@ class Observer{
     }
     observer(obj){
         if(!obj || Object.prototype.toString.call(obj) != '[object Object]'){
-            return
+            return;
         }
-        for(let key of obj){
-            this._initReactive(obj[key]);
+        for(let key in obj){
+            this._initReactive(obj,key);
         }
     }
-    _initReactive(obj){
+    _initReactive(obj,key){
         let that = this;
         if(Object.prototype.toString.call(obj[key]) == '[object Object]'){
             this._initReactive(obj[key]);
@@ -45,7 +45,7 @@ class Dep{
         }
     }
     notify(){
-        for(let event of eventList){
+        for(let event of this.eventList){
             event.update();
         }
     }
@@ -71,7 +71,7 @@ class Watcher{
     }
     get(){
         Dep.target = this;
-        let value = this.data[exp];
+        let value = this.data[this.exp];
         Dep.target = null;
         return value;
     }
