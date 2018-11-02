@@ -6,13 +6,23 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Bezier</title>
     <link rel="stylesheet" href="./bezier.css">
-    
+    <script src="./viewmodal.js"></script>
 </head>
 <body>
     <div class="ct-vertical">
         <div class="ct-horizon">
             <div class="ct-content">
                 <canvas id="curve" height="500" width="500"></canvas>
+                <div>
+                    <span>curve-bezier(
+                        <input class="coordinate" type="text" />,
+                        <input class="coordinate" type="text" />,
+                        <input class="coordinate" type="text" />,
+                        <input class="coordinate" type="text" />
+                        )</span>
+                    <button>Run</button>
+                </div>
+                <div class='car'></div>
             </div>
         </div>
     </div>
