@@ -4,29 +4,33 @@ class Observer{
         this._initReactive(obj);
     }
     on(key,event){
-        eventList[key]=eventList[key] | [];
-        if(!event && event instanceof Function){
+        let eventList = this.eventList;
+        eventList[key]=eventList[key] || [];
+        if(event && event instanceof Watcher){
             eventList[key].push(event);
         }  
     }
-    trigger(key){
-        if(!eventList[key] && eventList[key].length>0){
+    trigger(key,value){
+        let eventList = this.eventList;
+        if(eventList[key] && eventList[key].length>0){
             for(let event of eventList[key]){
-                event.call(null);
+                event.call(value);
             }
         }
     }
     _initReactive(obj){
-        for(key in obj){
+        let that = this;
+        for(let key in obj){
+            let value = obj[key];
             Object.defineProperty(obj,key,{
                 configurable:true,
                 enumerable:true,
                 get:function(){
-                    return this[key]
+                    return value;
                 },
-                set:function(value){
-                    console.log("Object Value "+key+"Change:"+value);
-                    obj[key] = value;
+                set:function(newValue){
+                    value = newValue;
+                    that.trigger(key,newValue);
                 }
             })
             if(Object.prototype.toString.call(obj[key]) == '[object Object]'){
@@ -36,13 +40,11 @@ class Observer{
     }
 }
 class Watcher{
-
+    constructor(action){
+        this.call = action;
+    }
 }
 
-let obj = {
-    name:'lily',
-    age:22,
-    shcool:'NJU'
-}
-let observer = new Observer(obj);
+
+
 

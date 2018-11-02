@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Bezier</title>
     <link rel="stylesheet" href="./bezier.css">
-    <script src="./viewmodal.js"></script>
+    <script src="./viewmodel.js"></script>
 </head>
 <body>
     <div class="ct-vertical">
@@ -14,18 +14,30 @@
             <div class="ct-content">
                 <canvas id="curve" height="500" width="500"></canvas>
                 <div>
-                    <span>curve-bezier(
-                        <input class="coordinate" type="text" />,
-                        <input class="coordinate" type="text" />,
-                        <input class="coordinate" type="text" />,
-                        <input class="coordinate" type="text" />
+                    <span>cubic-bezier(
+                        <input id="x1" class="coordinate" type="text" />,
+                        <input id="y1" class="coordinate" type="text" />,
+                        <input id="x2" class="coordinate" type="text" />,
+                        <input id="y2" class="coordinate" type="text" />
                         )</span>
-                    <button>Run</button>
+                    <button id="run">Run</button>
                 </div>
                 <div class='car'></div>
             </div>
         </div>
     </div>
     <script src="./bezier.js"></script>
+    <script>
+        let car = document.querySelector('.car');
+        let x1Dom = document.querySelector('#x1');
+        let y1Dom = document.querySelector('#y1');
+        let x2Dom = document.querySelector('#x2');
+        let y2Dom = document.querySelector('#y2');
+        let btn = document.getElementById('run');
+        btn.addEventListener('click',(e) => {
+            car.style.transitionTimingFunction = `cubic-bezier(${x1Dom.value},${y1Dom.value},${x2Dom.value},${y2Dom.value})`;
+            car.style.left = car.style.left == '420px'?'0px':'420px';
+        })
+    </script>
 </body>
 </html>

@@ -29,9 +29,11 @@ class Bezier {
         constructor(x, y, radius, isSelect) {
             this.x = x;
             this.y = y;
+            this.coordX = this.getCoordX();
+            this.coordY = this.getCoordY();
             this.radius = radius;
             this.isSelect = isSelect ? isSelect : false;
-            this.path=null;
+            this.path = null;
         }
         draw() {
             this.path = this.getPath();
@@ -48,12 +50,21 @@ class Bezier {
             circle.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
             return circle;
         }
-        getX() {
-            return this.x / 300;
+        getCoordX() {
+            return parseFloat((this.x / 300).toFixed(3));
         }
-        getY() {
-            return this.y / 300;
+        setCoordX(value) {
+            this.x = value;
+            this.coordX = parseFloat((value / 300).toFixed(3));
         }
+        getCoordY() {
+            return parseFloat(((300-this.y) / 300).toFixed(3));
+        }
+        setCoordY(value) {
+            this.y = value;
+            this.coordY = parseFloat(((300-value) / 300).toFixed(3));
+        }
+
     }
 
     //设置外层盒子的高度,垂直居中
@@ -74,7 +85,7 @@ class Bezier {
         ay = 15,
         len = 300;
     //bezier curve参数
-    let p0,p1,p2,p3;
+    let p0, p1, p2, p3;
 
     ctx.save();
     ctx.translate(tx, ty);
@@ -82,8 +93,8 @@ class Bezier {
     drawCanvas();
 
     //绑定事件
-    let drag=false,
-        dragCircle=null;
+    let drag = false,
+        dragCircle = null;
     canvas.addEventListener('mousedown', function (e) {
         let pos = getPosition(e.clientX, e.clientY);
         if (ctx.isPointInPath(p2.path, pos.x, pos.y)) {
@@ -91,7 +102,7 @@ class Bezier {
             dragCircle = p2;
             p2.isSelect = true;
             drawCanvas();
-        }else if (ctx.isPointInPath(p3.path, pos.x, pos.y)){
+        } else if (ctx.isPointInPath(p3.path, pos.x, pos.y)) {
             drag = true;
             dragCircle = p3;
             p3.isSelect = true;
@@ -101,9 +112,12 @@ class Bezier {
     canvas.addEventListener('mousemove', function (e) {
         let pos = getPosition(e.clientX, e.clientY);
         if (drag) {
-            dragCircle.x = pos.x - tx;
-            dragCircle.y = pos.y - ty;
-            drawCanvas();
+            if(pos.x >=0+ty && pos.x <=300+ty){
+                dragCircle.setCoordX(pos.x - tx);
+                dragCircle.setCoordY(pos.y - ty);
+                drawCanvas();
+            }
+            
         }
     });
     canvas.addEventListener('mouseup', function (e) {
@@ -117,19 +131,19 @@ class Bezier {
         return { x: x - rect.left, y: y - rect.top }
     }
 
-    function drawCanvas(){
-        ctx.clearRect(-tx,-ty,canvas.width,canvas.height);
+    function drawCanvas() {
+        ctx.clearRect(-tx, -ty, canvas.width, canvas.height);
         //坐标系
         drawTransaction(drawCoordinate);
 
         //bezier-curve
         p0 = new Circle(0, 300, 10);
         p1 = new Circle(300, 0, 10);
-        p2 = p2?p2:new Circle(250, 250, 10);
-        p3 = p3?p3:new Circle(50, 50, 10);
-        drawTransaction(drawCircle.bind(null,[p0,p1,p2,p3]));
- 
-        drawTransaction(drawJoinLine.bind(null,p2,p3));
+        p2 = p2 ? p2 : new Circle(250, 250, 10);
+        p3 = p3 ? p3 : new Circle(50, 50, 10);
+        drawTransaction(drawCircle.bind(null, [p0, p1, p2, p3]));
+
+        drawTransaction(drawJoinLine.bind(null, p2, p3));
         ctx.beginPath();
         ctx.moveTo(0, 300);
         ctx.bezierCurveTo(p2.x, p2.y, p3.x, p3.y, 300, 0);
@@ -165,8 +179,8 @@ class Bezier {
         ctx.lineTo(is2.x, is2.y);
         ctx.stroke();
     }
-    function drawCircle(circles){
-        for(let c of circles){
+    function drawCircle(circles) {
+        for (let c of circles) {
             c.draw();
         }
     }
@@ -181,16 +195,42 @@ class Bezier {
             y: y0 + (y1 - y0) * scale
         }
     }
-    function drawTransaction(){
+    function drawTransaction() {
         ctx.save();
-        for(let func of arguments){
-            if(typeof func == 'function'){
+        for (let func of arguments) {
+            if (typeof func == 'function') {
                 func();
             }
         }
         ctx.restore();
     }
 
-
+    //viewmodel
+    let obsP2 = new Observer(p2);
+    let obsP3 = new Observer(p3);
+    let x1Dom = document.querySelector('#x1');
+    let y1Dom = document.querySelector('#y1');
+    let x2Dom = document.querySelector('#x2');
+    let y2Dom = document.querySelector('#y2');
+    let wx1 = new Watcher((value) => {
+        x1Dom.value = value;
+    })
+    let wy1 = new Watcher((value) => {
+        y1Dom.value = value;
+    })
+    let wx2 = new Watcher((value) => {
+        x2Dom.value = value;
+    })
+    let wy2 = new Watcher((value) => {
+        y2Dom.value = value;
+    })
+    obsP2.on('coordX', wx1);
+    obsP2.on('coordY', wy1);
+    obsP3.on('coordX', wx2);
+    obsP3.on('coordY', wy2);
+    obsP2.trigger('coordX', p2.coordX);
+    obsP2.trigger('coordY', p2.coordY);
+    obsP3.trigger('coordX', p3.coordX);
+    obsP3.trigger('coordY', p3.coordY);
 
 }()
