@@ -77,6 +77,60 @@ class Watcher{
     }
 }
 
+class SelfVue{
+    constructor(el,data){
+        let self = this;
+        this.data = data;
+        //代理模式?
+        Object.keys(this.data).forEach(element => {
+            self.proxyKey(element)
+        });
+        new Observer(data);
+        let frag = this.compile(el,data);
+        let parent = el.parentNode;
+        parent.removeChild(el);
+        parent.appendChild(frag);
+        
+    }
+    proxyKey(key){
+        Object.defineProperty(this,key,{
+            enumerable:false,
+            configurable:true,
+            get:function(){
+                return this.data[key];
+            },
+            set:function(value){
+                this.data[key] = value;
+            }
+        })
+    }
+    compile(el,data){
+        let fragment = document.createDocumentFragment();
+        fragment.appendChild(el.cloneNode(true));
+        let reg = /{{([\w\d]+)}}/;
+        let elClone = fragment.children[0];
+        this.compileNode(elClone,data,reg);
+        return fragment;
+    }
+    compileNode(el,data,reg){
+        //初始化
+        for(let child of el.children){
+            let textNode = Array.from(child.childNodes).find((node) => {
+                return node.nodeType == 3 && reg.test(node.nodeValue);
+            });
+            if(textNode){
+                let result = reg.exec(textNode.nodeValue);
+                if(Object.keys(data).includes(result[1])){
+                    textNode.nodeValue = textNode.nodeValue.replace(result[0],data[result[1]]);
+                    new Watcher(data,result[1],(value,oldValue) => {
+                        textNode.nodeValue = textNode.nodeValue.replace(oldValue,value);
+                    })
+                }
+            }
+            this.compileNode(child,data,reg);
+        }
+    }
+}
 
 
 
