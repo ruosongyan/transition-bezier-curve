@@ -15,12 +15,17 @@
                 <canvas id="curve" height="500" width="500"></canvas>
                 <div>
                     <span>cubic-bezier(
-                        <input id="x1" class="coordinate" type="text" />,
-                        <input id="y1" class="coordinate" type="text" />,
-                        <input id="x2" class="coordinate" type="text" />,
-                        <input id="y2" class="coordinate" type="text" />
+                        <div id="p2" class="point">
+                            <input id="x1" class="coordinate" type="number" v-model="coordX" />,
+                            <input id="y1" class="coordinate" type="number" v-model="coordY"/>,
+                        </div>
+                        <div id="p3" class="point">
+                            <input id="x2" class="coordinate" type="number" v-model="coordX"/>,
+                            <input id="y2" class="coordinate" type="number" v-model="coordY"/>
+                        </div>
                         )</span>
                     <button id="run">Run</button>
+                    <button id="reset">reset</button>
                 </div>
                 <div class='car'></div>
             </div>
@@ -34,10 +39,17 @@
         let x2Dom = document.querySelector('#x2');
         let y2Dom = document.querySelector('#y2');
         let btn = document.getElementById('run');
+        let reset = document.getElementById('reset');
         btn.addEventListener('click',(e) => {
             car.style.transitionTimingFunction = `cubic-bezier(${x1Dom.value},${y1Dom.value},${x2Dom.value},${y2Dom.value})`;
             car.style.left = car.style.left == '420px'?'0px':'420px';
         })
+        reset.addEventListener('click',(e) => {
+            modelP2.data.coordX = 0.833;
+            modelP2.data.coordY = 0.167;
+            modelP3.data.coordX = 0.167;
+            modelP3.data.coordY = 0.833;
+        });
     </script>
 </body>
 </html>

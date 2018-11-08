@@ -29,8 +29,6 @@ class Bezier {
         constructor(x, y, radius, isSelect) {
             this.x = x;
             this.y = y;
-            this.coordX = this.getCoordX();
-            this.coordY = this.getCoordY();
             this.radius = radius;
             this.isSelect = isSelect ? isSelect : false;
             this.path = null;
@@ -50,19 +48,30 @@ class Bezier {
             circle.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
             return circle;
         }
-        getCoordX() {
+        get coordX() {
             return parseFloat((this.x / 300).toFixed(3));
         }
-        setCoordX(value) {
-            this.x = value;
-            this.coordX = parseFloat((value / 300).toFixed(3));
+        set coordX(value) {
+            console.log(value);
+            if (value >= 0 && value <= 1) {
+                this.x = value * 300;
+                drawCanvas();
+            } else if (value < 0) {
+                this.x = 0;
+                drawCanvas();
+            } else if (value > 1) {
+                this.x = 1 * 300;
+                drawCanvas();
+            }
+            
         }
-        getCoordY() {
-            return parseFloat(((300-this.y) / 300).toFixed(3));
+        get coordY() {
+            return parseFloat(((300 - this.y) / 300).toFixed(3));
         }
-        setCoordY(value) {
-            this.y = value;
-            this.coordY = parseFloat(((300-value) / 300).toFixed(3));
+        set coordY(value) {
+            this.y = (1 - value) * 300;
+            drawCanvas();
+
         }
 
     }
@@ -112,19 +121,20 @@ class Bezier {
     canvas.addEventListener('mousemove', function (e) {
         let pos = getPosition(e.clientX, e.clientY);
         if (drag) {
-            if(pos.x >=0+ty && pos.x <=300+ty){
-                dragCircle.setCoordX(pos.x - tx);
-                dragCircle.setCoordY(pos.y - ty);
-                drawCanvas();
+            if (pos.x >= 0 + ty && pos.x <= 300 + ty) {
+                dragCircle.x = (pos.x - tx);
             }
-            
+            dragCircle.y = (pos.y - ty);
+            drawCanvas();
+
         }
     });
     canvas.addEventListener('mouseup', function (e) {
-        let pos = getPosition(e.clientX, e.clientY);
-        drag = false;
-        dragCircle.isSelect = false;
-        drawCanvas();
+        if(drag){
+            drag = false;
+            dragCircle.isSelect = false;
+            drawCanvas();
+        }
     });
     function getPosition(x, y) {
         let rect = canvas.getBoundingClientRect();
@@ -206,27 +216,8 @@ class Bezier {
     }
 
     //viewmodel
-    let obsP2 = new Observer(p2);
-    let obsP3 = new Observer(p3);
-    let x1Dom = document.querySelector('#x1');
-    let y1Dom = document.querySelector('#y1');
-    let x2Dom = document.querySelector('#x2');
-    let y2Dom = document.querySelector('#y2');
-    x1Dom.value = p2.coordX;
-    y1Dom.value = p2.coordY;
-    x2Dom.value = p3.coordX;
-    y2Dom.value = p3.coordY;
-    new Watcher(p2,"coordX",(value) => {
-        x1Dom.value = value;
-    })
-    new Watcher(p2,"coordY",(value) => {
-        y1Dom.value = value;
-    })
-    new Watcher(p3,"coordX",(value) => {
-        x2Dom.value = value;
-    })
-    new Watcher(p3,"coordY",(value) => {
-        y2Dom.value = value;
-    })
-
+    let p2Dom = document.querySelector('#p2');
+    let p3Dom = document.querySelector('#p3');
+    window.modelP2=new SelfVue(p2Dom, p2);
+    window.modelP3=new SelfVue(p3Dom, p3);
 }()

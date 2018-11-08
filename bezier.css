@@ -28,7 +28,9 @@
     position: relative;
     left: 0px;
 }
-
+.point{
+    display: inline-block;
+}
 .coordinate{
-    width: 40px;
+    width: 50px;
 }
